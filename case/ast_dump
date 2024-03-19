@@ -1,0 +1,6 @@
+#!/bin/python
+import sys, ast
+
+if __name__ == '__main__':
+    program = sys.stdin.read()
+    print(ast.dump(ast.parse(program), indent=2))
