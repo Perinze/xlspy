@@ -40,6 +40,7 @@ class Typer(ast.NodeVisitor):
         else:
             node.type = self.type_env[name] = node.annotation.id
 
+    # BinOp(expr left, operator op, expr right)
     def visit_BinOp(self, node: ast.BinOp) -> str:
         left_name = self.visit(node.left)
         right_name = self.visit(node.right)
