@@ -10,3 +10,5 @@ class NameAllocator:
     def next_with_name(self, name: str):
         self.count += 1
         return f"{name}.{self.count}"
+
+UNALLOC = 0

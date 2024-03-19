@@ -26,6 +26,7 @@ def main():
     
     try:
         tree = ast.parse(source_code)
+        print(ast.dump(tree, indent=4))
         typed_tree = type_inference(tree)
         print(ast.dump(typed_tree, indent=4))
         xlsir = xlsir_generator(typed_tree)
