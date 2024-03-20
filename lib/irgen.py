@@ -33,4 +33,13 @@ class IRGenerator(ast.NodeVisitor):
         return reduce(lambda x, y: x + y, [left_irs, right_irs, binop_irs])
     
     def visit_Name(self, node: ast.Name) -> list[IROperation]:
-        return [IROperation(node.id, 'identity', [node.id])]
+        return [IROperation(node.name, 'identity', [node.id])]
+
+    def visit_Constant(self, node: ast.Constant) -> list[IROperation]:
+        return [IROperation(node.name, 'literal', [str(node.value)])]
+
+    def visit_Assign(self, node: ast.Assign) -> list[IROperation]:
+        value_irs : list[IROperation] = self.visit(node.value)
+        f = lambda target: IROperation(target.name, 'identity', [value_irs[-1].name])
+        assign_irs : list[IROperation] = list(map(f, node.targets))
+        return value_irs + assign_irs

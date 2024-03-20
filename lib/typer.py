@@ -55,7 +55,7 @@ class Typer(ast.NodeVisitor):
         for target in node.targets:
             assert self.visit(target) == UNALLOC
             targetName: ast.Name = target
-            ir_name = self.name_env[targetName.id] = self.name_alloc.next_with_name(targetName.id)
+            ir_name = target.name = self.name_env[targetName.id] = self.name_alloc.next_with_name(targetName.id)
             self.type_env[ir_name] = self.type_env[value_id]
 
     # Name(identifier id, expr_context ctx)
@@ -69,3 +69,9 @@ class Typer(ast.NodeVisitor):
                 return self.name_env[node.id]
         else:
             error(f"ctx other than Store/Load are not implemented")
+
+    # Constant(constant value, string? kind)
+    def visit_Constant(self, node: ast.Constant) -> str:
+        node.name = self.name_alloc.next_with_name("literal")
+        node.type = self.type_env[node.name] = 'int'
+        return node.name
