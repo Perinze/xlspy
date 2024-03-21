@@ -66,7 +66,8 @@ class Typer(ast.NodeVisitor):
             if self.name_env[node.id] == None:
                 error(f"{node.id} undefined")
             else:
-                return self.name_env[node.id]
+                node.name = self.name_env[node.id]
+                return node.name
         else:
             error(f"ctx other than Store/Load are not implemented")
 

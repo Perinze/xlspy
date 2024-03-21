@@ -7,7 +7,7 @@ class IROperation:
         self.is_ret = is_ret
 
     def __repr__(self) -> str:
-        return f"{self.name} = {self.operation}({', '.join(self.args)})"
+        return f"{'ret ' if self.is_ret else ''}{self.name} = {self.operation}({', '.join(self.args)})"
 
 class IRFunction:
     def __init__(self, name, args, ret, body=[], top=True) -> None:

@@ -12,7 +12,7 @@ def type_inference(ast_tree):
 
 def xlsir_generator(ast_tree):
     generator = IRGenerator(ast_tree)
-    return generator.codegen()
+    return generator.top
 
 def main():
     if len(sys.argv) != 2:
