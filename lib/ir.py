@@ -10,13 +10,6 @@ class IROperation:
         return f"{'ret ' if self.is_ret else ''}{self.name} = {self.operation}({', '.join(self.args)})"
 
 class IRFunction:
-    def __init__(self, name, args, ret, body=[], top=True) -> None:
-        self.name = name
-        self.args = args
-        self.ret = ret
-        self.body = body
-        self.top = top
-
     def __init__(self) -> None:
         self.name = "untitled"
         self.args = []

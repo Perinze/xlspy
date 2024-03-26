@@ -4,9 +4,17 @@
 
 - invoke function from top
 - iterate possible types in config
-- replace assert with error()
+- for loop invariant args
 
 ## note
+
+### semantic
+
+#### for loop
+
+in current version,
+for-loop can only contain one stmt,
+and iter must be range(fixed_number).
 
 ### typer
 

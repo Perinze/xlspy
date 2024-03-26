@@ -12,6 +12,7 @@ class IRGenerator(ast.NodeVisitor):
         self.ast_tree = ast_tree
         self.node_env : dict[Name, IROperation] = {}
         self.top = IRFunction()
+        self.funcs = []
         self.visit(ast_tree)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> IRFunction:
@@ -72,3 +73,24 @@ class IRGenerator(ast.NodeVisitor):
         (rhs_ir, rhs_name) = self.visit(node.comparators[0])
         cmp_ir = [IROperation(node.name, "eq", [lhs_name, rhs_name])]
         return (lhs_ir + rhs_ir + cmp_ir, node.name)
+
+    def visit_For(self, node: ast.For) -> StmtResult:
+        body_name = node.name
+        target = node.body[0].targets[0]
+        init = target.prev_name
+        result = target.name
+        trip_count = node.trip_count
+        data_type = target.type
+        ir = IROperation(result, 'counted_for', [init, f"trip_count={trip_count}", f"body={body_name}", '[]'])
+
+        # generate func as body
+        ir_func = IRFunction()
+        ir_func.name = body_name
+        ir_func.args = ['i', 'loop_carry_data']
+        ir_func.ret = data_type
+        ir_func.top = False
+        ir_func.body = self.visit(node.body[0])
+        ir_func.body[-1].is_ret = True
+        self.funcs += [ir_func]
+
+        return [ir]

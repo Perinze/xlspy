@@ -61,7 +61,7 @@ class Typer(ast.NodeVisitor):
             assert self.visit(target) == UNALLOC
             targetName: ast.Name = target
             ir_name = target.name = self.name_env[targetName.id] = self.name_alloc.next_with_name(targetName.id)
-            self.type_env[ir_name] = self.type_env[value_id]
+            target.type = self.type_env[ir_name] = self.type_env[value_id]
             res.assigned_name_map += [(targetName, ir_name)]
         return res
 
@@ -140,3 +140,24 @@ class Typer(ast.NodeVisitor):
         node.name = self.name_alloc.next_with_name("lt")
         node.type = self.type_env[node.name] = self.type_env[lhs]
         return node.name
+
+    # For(expr target, expr iter, stmt* body, stmt* orelse, string? type_comment)
+    def visit_For(self, node: ast.For) -> StmtRes:
+        if node.orelse != []:
+            error("else in for is not supported")
+        if not isinstance(node.iter, ast.Call) or node.iter.func.id != 'range':
+            error("for-loop without range is not supported")
+        if not isinstance(node.iter.args[0], ast.Constant):
+            error("dynamic trip count is not supported")
+        trip_count = node.iter.args[0].value
+        node.trip_count = trip_count
+        only_stmt: ast.Assign = node.body[0]
+        if len(node.body) != 1:
+            error("for-loop body supports exactly one stmt")
+        if not isinstance(only_stmt, ast.Assign):
+            error("for-loop body should be assignment")
+        acc: ast.Name = only_stmt.targets[0]
+        acc.prev_name = self.name_env[acc.id]
+        self.visit(only_stmt)
+        node.name = self.name_alloc.next_with_name('for')
+        return StmtRes()

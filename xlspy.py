@@ -12,7 +12,7 @@ def type_inference(ast_tree):
 
 def xlsir_generator(ast_tree):
     generator = IRGenerator(ast_tree)
-    return generator.top
+    return [generator.top] + generator.funcs
 
 def main():
     if len(sys.argv) != 2:
@@ -30,7 +30,8 @@ def main():
         typed_tree = type_inference(tree)
         print(ast.dump(typed_tree, indent=4))
         xlsir = xlsir_generator(typed_tree)
-        print(xlsir)
+        for f in xlsir:
+            print(f)
     except SyntaxError as e:
         print("SyntaxError:", e)
 
