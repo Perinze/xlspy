@@ -1,13 +1,15 @@
+from lib.type import type_map
 
 class IROperation:
-    def __init__(self, name, operation, args, is_ret=False):
+    def __init__(self, name, type, operation, args, is_ret=False):
         self.name = name
+        self.type = type
         self.operation = operation
         self.args = args
         self.is_ret = is_ret
 
     def __repr__(self) -> str:
-        return f"{'ret ' if self.is_ret else ''}{self.name} = {self.operation}({', '.join(self.args)})"
+        return f"{'ret ' if self.is_ret else ''}{self.name}: {type_map[self.type]} = {self.operation}({', '.join(self.args)})"
 
 class IRFunction:
     def __init__(self) -> None:

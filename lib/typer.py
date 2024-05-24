@@ -20,8 +20,8 @@ class Typer(ast.NodeVisitor):
         # TODO iterate possible types in config
         for arg in node.args.args:
             self.visit(arg)
-        print(self.name_env)
-        print(self.type_env)
+        #print(self.name_env)
+        #print(self.type_env)
         self.current_function = node
         self.generic_visit(node)
         return StmtRes()

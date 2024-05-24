@@ -2,6 +2,7 @@ import ast
 from functools import reduce
 
 from lib.ir import *
+from lib.type import type_map
 
 Name = str
 ExprResult = (list[IROperation], Name)
@@ -17,8 +18,8 @@ class IRGenerator(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> IRFunction:
         self.top.name = node.name
-        self.top.args = map(lambda a: a.arg, node.args.args)
-        self.top.ret = node.type
+        self.top.args = map(lambda a: f"{a.arg}: {type_map[a.type]}", node.args.args)
+        self.top.ret = type_map[node.type]
         results = map(self.visit, node.body)
         self.top.body = reduce(lambda x, y: x + y, results)
         return self.top
@@ -31,7 +32,7 @@ class IRGenerator(ast.NodeVisitor):
     def visit_BinOp(self, node: ast.BinOp) -> ExprResult:
         (left_irs, left_name) = self.visit(node.left)
         (right_irs, right_name) = self.visit(node.right)
-        binop_irs: list[IROperation] = [IROperation(node.name, 'add', [left_name, right_name])]
+        binop_irs: list[IROperation] = [IROperation(node.name, node.type, 'add', [left_name, right_name])]
         self.node_env[node.name] = binop_irs[0]
         irs = reduce(lambda x, y: x + y, [left_irs, right_irs, binop_irs])
         return (irs, node.name)
